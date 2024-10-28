@@ -1,72 +1,40 @@
 {
-  "openapi": "3.0.1",
+  "openapi": "3.1.0",
   "info": {
-    "title": "OpenAPI Plant Store",
-    "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification",
-    "license": {
-      "name": "MIT"
-    },
-    "version": "1.0.0"
+    "title": "FastAPI",
+    "version": "0.1.0"
   },
-  "servers": [
-    {
-      "url": "http://sandbox.mintlify.com"
-    }
-  ],
-  "security": [
-    {
-      "bearerAuth": []
-    }
-  ],
   "paths": {
-    "/plants": {
-      "get": {
-        "description": "Returns all plants from the system that the user has access to",
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "The maximum number of results to return",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Plant"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      },
+    "/document_analysis/road/booking/process_booking_confirmation_documents": {
       "post": {
-        "description": "Creates a new plant in the store",
+        "tags": [
+          "road"
+        ],
+        "summary": "Process Booking Confirmation Documents",
+        "operationId": "process_booking_confirmation_documents_document_analysis_road_booking_process_booking_confirmation_documents_post",
         "requestBody": {
-          "description": "Plant to add to the store",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NewPlant"
+                "$ref": "#/components/schemas/DocumentProcessingRequest"
+              },
+              "example": {
+                "extraction_type": "RoadBookingConfirmation",
+                "documents": [
+                  {
+                    "id": "DOC-67890",
+                    "name": "BookingConfirmation.pdf",
+                    "size": 1048576,
+                    "content": "base64_encoded_string_here",
+                    "mime_type": "application/pdf"
+                  }
+                ],
+                "mapping_instructions": [
+                  {
+                    "mapping_collection_id": "client-database",
+                    "path": "client"
+                  }
+                ]
               }
             }
           },
@@ -74,21 +42,230 @@
         },
         "responses": {
           "200": {
-            "description": "plant response",
+            "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Plant"
+                  "$ref": "#/components/schemas/RoadBookingConfirmationAnalysisAPIResponse"
+                },
+                "examples": {
+                  "example1": {
+                    "summary": "Example response",
+                    "value": {
+                      "id": "12345",
+                      "request_at": "2023-05-01T12:34:56Z",
+                      "extraction_type": "RoadBookingConfirmation",
+                      "user": {
+                        "object": "user",
+                        "id": "7f3b6f89-2a1c-4d39-9f04-23c7dfb8a234",
+                        "email": "jane.doe@example.com",
+                        "email_verified": true,
+                        "created_at": "2023-05-14T09:22:45Z",
+                        "updated_at": "2024-08-20T14:30:12Z",
+                        "parameters": {
+                          "language": "fr",
+                          "agency_id": "agency_789456123",
+                          "organization_id": "org_654321987",
+                          "theme": "dark"
+                        },
+                        "first_name": "Jane",
+                        "last_name": "Doe",
+                        "profile_picture_url": "https://example.com/profiles/jane_doe.jpg"
+                      },
+                      "extraction": {
+                        "booking_id": "BC-67890",
+                        "client": {
+                          "VAT_number": "GB123456789",
+                          "company_name": "Acme Corporation",
+                          "address": {
+                            "line1": "123 Elm Street",
+                            "line2": "Suite 500",
+                            "city": "London",
+                            "state": "Greater London",
+                            "postal_code": "WC2N 5DU",
+                            "country": "GB"
+                          },
+                          "phone_number": "+44 20 7946 0958",
+                          "email_address": "client@acme.com"
+                        },
+                        "shipments": [
+                          {
+                            "shipment_id": "SHIP-001",
+                            "sender": {
+                              "company_name": "Acme Corporation",
+                              "observations": "Handle with care.",
+                              "address": {
+                                "line1": "123 Elm Street",
+                                "line2": "Suite 500",
+                                "city": "London",
+                                "state": "Greater London",
+                                "postal_code": "WC2N 5DU",
+                                "country": "GB"
+                              },
+                              "phone_number": "+44 20 7946 0958",
+                              "email_address": "sender@acme.com",
+                              "pickup_datetime": {
+                                "date": "2023-05-02",
+                                "start_time": "08:00",
+                                "end_time": "12:00"
+                              }
+                            },
+                            "recipient": {
+                              "company_name": "Beta Industries",
+                              "observations": "Deliver to receiving dock.",
+                              "address": {
+                                "line1": "789 Pine Street",
+                                "city": "Munich",
+                                "state": "Bavaria",
+                                "postal_code": "80331",
+                                "country": "DE"
+                              },
+                              "phone_number": "+49 89 123456",
+                              "email_address": "recipient@beta.com",
+                              "delivery_datetime": {
+                                "date": "2023-05-03",
+                                "start_time": "10:00",
+                                "end_time": "16:00"
+                              }
+                            },
+                            "goods": {
+                              "packing": {
+                                "packing_type": "pallet",
+                                "units": 10,
+                                "observation": "Stackable",
+                                "number_eur_pallet": 5
+                              },
+                              "weight": 500.0,
+                              "dimensions": {
+                                "loading_meters": 0.4,
+                                "length": 1.2,
+                                "width": 0.8,
+                                "height": 1.5,
+                                "volume": 1.44
+                              },
+                              "temperature_infos": {
+                                "min_temperature": 5,
+                                "max_temperature": 25,
+                                "category": "Fresh"
+                              },
+                              "dangerous_goods_infos": [
+                                {
+                                  "weight": 100.0,
+                                  "UN_code": 1202,
+                                  "UN_label": "3",
+                                  "UN_class": "Flammable liquid",
+                                  "UN_packing_group": "II",
+                                  "ADR_tunnel_code": "C"
+                                }
+                              ]
+                            },
+                            "transport_constraints": {
+                              "vehicle_type": "Carrier",
+                              "body_type": "Refrigerated",
+                              "tail_lift": true,
+                              "crane": false
+                            }
+                          },
+                          {
+                            "shipment_id": "SHIP-002",
+                            "sender": {
+                              "company_name": "Gamma Enterprises",
+                              "observations": "Fragile items.",
+                              "address": {
+                                "line1": "456 Maple Road",
+                                "line2": "Building A",
+                                "city": "Manchester",
+                                "state": "Greater Manchester",
+                                "postal_code": "M1 2AB",
+                                "country": "GB"
+                              },
+                              "phone_number": "+44 161 234 5678",
+                              "email_address": "sender@gamma.com",
+                              "pickup_datetime": {
+                                "date": "2023-05-05",
+                                "start_time": "09:00",
+                                "end_time": "11:00"
+                              }
+                            },
+                            "recipient": {
+                              "company_name": "Delta Logistics",
+                              "observations": "Keep dry.",
+                              "address": {
+                                "line1": "987 Cedar Boulevard",
+                                "city": "Frankfurt",
+                                "state": "Hesse",
+                                "postal_code": "60313",
+                                "country": "DE"
+                              },
+                              "phone_number": "+49 69 876543",
+                              "email_address": "recipient@delta.com",
+                              "delivery_datetime": {
+                                "date": "2023-05-07",
+                                "start_time": "14:00",
+                                "end_time": "18:00"
+                              }
+                            },
+                            "goods": {
+                              "packing": {
+                                "packing_type": "box",
+                                "units": 20,
+                                "observation": "Fragile",
+                                "number_eur_pallet": 0
+                              },
+                              "weight": 250.0,
+                              "dimensions": {
+                                "loading_meters": 0.1,
+                                "length": 0.6,
+                                "width": 0.4,
+                                "height": 0.5,
+                                "volume": 0.12
+                              },
+                              "temperature_infos": {
+                                "min_temperature": 10,
+                                "max_temperature": 30,
+                                "category": "Dry"
+                              },
+                              "dangerous_goods_infos": []
+                            },
+                            "transport_constraints": {
+                              "vehicle_type": "Light Vehicle",
+                              "body_type": "Dry Van",
+                              "tail_lift": false,
+                              "crane": false
+                            }
+                          }
+                        ],
+                        "payment": {
+                          "total_price": 1500.0,
+                          "currency": "EUR"
+                        }
+                      },
+                      "documents": [
+                        {
+                          "id": "DOC-67890",
+                          "name": "BookingConfirmation.pdf",
+                          "size": 1048576,
+                          "content": "base64_encoded_string_here",
+                          "mime_type": "application/pdf",
+                          "metadata": {
+                            "is_inline": false,
+                            "url": "https://example.com/booking_confirmation.pdf"
+                          }
+                        }
+                      ],
+                      "action_type": "Creation"
+                    }
+                  }
                 }
               }
             }
           },
-          "400": {
-            "description": "unexpected error",
+          "422": {
+            "description": "Validation Error",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
@@ -96,32 +273,1314 @@
         }
       }
     },
-    "/plants/{id}": {
-      "delete": {
-        "description": "Deletes a single plant based on the ID supplied",
+    "/document_analysis/road/transport_order/process_transport_order_documents": {
+      "post": {
+        "tags": [
+          "road"
+        ],
+        "summary": "Process Transport Order Documents",
+        "operationId": "process_transport_order_documents_document_analysis_road_transport_order_process_transport_order_documents_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DocumentProcessingRequest"
+              },
+              "example": {
+                "extraction_type": "RoadTransportOrder",
+                "documents": [
+                  {
+                    "id": "DOC-67890",
+                    "name": "RoadTransportOrder.pdf",
+                    "size": 1048576,
+                    "content": "base64_encoded_string_here",
+                    "mime_type": "application/pdf"
+                  }
+                ],
+                "mapping_instructions": []
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoadRoadTransportOrderAnalysisAPIResponse"
+                },
+                "examples": {
+                  "example1": {
+                    "summary": "Example response",
+                    "value": {
+                      "id": "12345",
+                      "request_at": "2023-05-01T12:34:56Z",
+                      "extraction_type": "RoadTransportOrder",
+                      "user": {
+                        "object": "user",
+                        "id": "7f3b6f89-2a1c-4d39-9f04-23c7dfb8a234",
+                        "email": "jane.doe@example.com",
+                        "email_verified": true,
+                        "created_at": "2023-05-14T09:22:45Z",
+                        "updated_at": "2024-08-20T14:30:12Z",
+                        "parameters": {
+                          "language": "fr",
+                          "agency_id": "agency_789456123",
+                          "organization_id": "org_654321987",
+                          "theme": "dark"
+                        },
+                        "first_name": "Jane",
+                        "last_name": "Doe",
+                        "profile_picture_url": "https://example.com/profiles/jane_doe.jpg"
+                      },
+                      "extraction": {
+                        "transport_id": "TR-12345",
+                        "client": {
+                          "VAT_number": "FR12345678901",
+                          "company_name": "Acme Logistics Inc.",
+                          "address": {
+                            "line1": "123 Main Street",
+                            "line2": "Suite 456",
+                            "city": "Paris",
+                            "state": "ÃŽle-de-France",
+                            "postal_code": "75001",
+                            "country": "France"
+                          },
+                          "phone_number": "+33123456789",
+                          "email_address": "contact@acmelogistics.com"
+                        },
+                        "Loads": [
+                          {
+                            "load_id": "888333",
+                            "loading_datetime": {
+                              "date": "2024-07-10"
+                            },
+                            "orders": [
+                              {
+                                "order_id": "495",
+                                "delivery_datetime": {
+                                  "date": "2024-07-10",
+                                  "start_time": "22:00:00"
+                                },
+                                "recipient": "CASINOCAISE",
+                                "num_pallets": 49.0,
+                                "num_parcels": 33.0,
+                                "pallets_on_ground": 0.28,
+                                "weight": 620.0,
+                                "num_eur_pallets": 0.0
+                              },
+                              {
+                                "order_id": "643",
+                                "delivery_datetime": {
+                                  "date": "2024-07-10",
+                                  "start_time": "23:00:00"
+                                },
+                                "recipient": "BASE ITM ST QUENTIN A/B PD",
+                                "num_pallets": 89.0,
+                                "num_parcels": 33.0,
+                                "pallets_on_ground": 0.63,
+                                "weight": 620.0,
+                                "num_eur_pallets": 0.0
+                              },
+                              {
+                                "order_id": "712",
+                                "delivery_datetime": {
+                                  "date": "2024-07-10",
+                                  "start_time": "22:00:00"
+                                },
+                                "recipient": "ATELIER FORZIEN LA TALAUDE",
+                                "num_pallets": 179.0,
+                                "num_parcels": 80.0,
+                                "pallets_on_ground": 0.63,
+                                "weight": 620.0,
+                                "num_eur_pallets": 0.0
+                              },
+                              {
+                                "order_id": "718",
+                                "delivery_datetime": {
+                                  "date": "2024-07-10",
+                                  "start_time": "22:00:00"
+                                },
+                                "recipient": "AUCHAN TOUSSEU A/B",
+                                "num_pallets": 1910.0,
+                                "num_parcels": 1283.0,
+                                "pallets_on_ground": 4.95,
+                                "weight": 620.0,
+                                "num_eur_pallets": 0.0
+                              },
+                              {
+                                "order_id": "720",
+                                "delivery_datetime": {
+                                  "date": "2024-07-10",
+                                  "start_time": "22:00:00"
+                                },
+                                "recipient": "BASE ITM DONZERE",
+                                "num_pallets": 108.0,
+                                "num_parcels": 60.0,
+                                "pallets_on_ground": 0.68,
+                                "weight": 620.0,
+                                "num_eur_pallets": 0.0
+                              },
+                              {
+                                "order_id": "888334",
+                                "delivery_datetime": {
+                                  "date": "2024-07-10",
+                                  "start_time": "22:00:00"
+                                },
+                                "recipient": "SAMADA NEUVILLE",
+                                "num_pallets": 194.0,
+                                "num_parcels": 123.0,
+                                "pallets_on_ground": 0.64,
+                                "weight": 620.0,
+                                "num_eur_pallets": 0.0
+                              },
+                              {
+                                "order_id": "761",
+                                "delivery_datetime": {
+                                  "date": "2024-07-10",
+                                  "start_time": "22:00:00"
+                                },
+                                "recipient": "BASE ITM ST QUENTIN A/B 5h",
+                                "num_pallets": 115.0,
+                                "num_parcels": 102.0,
+                                "pallets_on_ground": 0.64,
+                                "weight": 620.0,
+                                "num_eur_pallets": 0.0
+                              },
+                              {
+                                "order_id": "789",
+                                "delivery_datetime": {
+                                  "date": "2024-07-10",
+                                  "start_time": "22:00:00"
+                                },
+                                "recipient": "ARAL 69 FEYZIN",
+                                "num_pallets": 41.0,
+                                "num_parcels": 20.0,
+                                "pallets_on_ground": 0.35,
+                                "weight": 620.0,
+                                "num_eur_pallets": 0.0
+                              },
+                              {
+                                "order_id": "774",
+                                "delivery_datetime": {
+                                  "date": "2024-07-10",
+                                  "start_time": "22:00:00"
+                                },
+                                "recipient": "DOMBES DISTRIBUTION",
+                                "num_pallets": 200.0,
+                                "num_parcels": 20.0,
+                                "pallets_on_ground": 0.35,
+                                "weight": 620.0,
+                                "num_eur_pallets": 0.0
+                              },
+                              {
+                                "order_id": "797",
+                                "delivery_datetime": {
+                                  "date": "2024-07-10",
+                                  "start_time": "22:00:00"
+                                },
+                                "recipient": "TRI DISTR LOC MIONS 69",
+                                "num_pallets": 148.0,
+                                "num_parcels": 41.0,
+                                "pallets_on_ground": 0.39,
+                                "weight": 620.0,
+                                "num_eur_pallets": 0.0
+                              },
+                              {
+                                "order_id": "897",
+                                "delivery_datetime": {
+                                  "date": "2024-07-10",
+                                  "start_time": "22:00:00"
+                                },
+                                "recipient": "BASE ITM MONTELIMAR",
+                                "num_pallets": 111.0,
+                                "num_parcels": 67.0,
+                                "pallets_on_ground": 0.46,
+                                "weight": 620.0,
+                                "num_eur_pallets": 0.0
+                              },
+                              {
+                                "order_id": "1692",
+                                "delivery_datetime": {
+                                  "date": "2024-07-10",
+                                  "start_time": "22:00:00"
+                                },
+                                "recipient": "Appro FERRIERS DE L'ARDECHE",
+                                "num_pallets": 44.0,
+                                "num_parcels": 22.0,
+                                "pallets_on_ground": 0.21,
+                                "weight": 620.0,
+                                "num_eur_pallets": 0.0
+                              },
+                              {
+                                "order_id": "743",
+                                "delivery_datetime": {
+                                  "date": "2024-07-11",
+                                  "start_time": "05:00:00"
+                                },
+                                "recipient": "CARREF LYON OVALS LIV A/B AM",
+                                "num_pallets": 585.0,
+                                "num_parcels": 124.0,
+                                "pallets_on_ground": 1.88,
+                                "weight": 620.0,
+                                "num_eur_pallets": 0.0
+                              }
+                            ],
+                            "total_num_pallets": 4261.0,
+                            "total_num_parcels": 2572.0,
+                            "total_pallets_on_ground": 19.38,
+                            "total_weight": 620.0,
+                            "total_num_eur_pallets": 0.0
+                          },
+                          {
+                            "load_id": "888474",
+                            "loading_datetime": {
+                              "date": "2024-07-10"
+                            },
+                            "orders": [
+                              {
+                                "order_id": "499",
+                                "delivery_datetime": {
+                                  "date": "2024-07-11",
+                                  "start_time": "04:00:00"
+                                },
+                                "recipient": "LOGIDIS AIRE SUR LA LYS A/B",
+                                "num_pallets": 3432.0,
+                                "num_parcels": 1478.0,
+                                "pallets_on_ground": 13.16,
+                                "weight": 620.0,
+                                "num_eur_pallets": 0.0
+                              }
+                            ],
+                            "total_num_pallets": 3432.0,
+                            "total_num_parcels": 1478.0,
+                            "total_pallets_on_ground": 13.16,
+                            "total_weight": 620.0,
+                            "total_num_eur_pallets": 0.0
+                          },
+                          {
+                            "load_id": "888745",
+                            "loading_datetime": {
+                              "date": "2024-07-10"
+                            },
+                            "orders": [
+                              {
+                                "order_id": "745",
+                                "delivery_datetime": {
+                                  "date": "2024-07-11",
+                                  "start_time": "05:00:00"
+                                },
+                                "recipient": "CASINO CORBAS A/B",
+                                "num_pallets": 4064.0,
+                                "num_parcels": 1510.0,
+                                "pallets_on_ground": 14.54,
+                                "weight": 620.0,
+                                "num_eur_pallets": 0.0
+                              },
+                              {
+                                "order_id": "762",
+                                "delivery_datetime": {
+                                  "date": "2024-07-11",
+                                  "start_time": "05:00:00"
+                                },
+                                "recipient": "CASINO CORBAS SUPERETTE",
+                                "num_pallets": 1273.0,
+                                "num_parcels": 966.0,
+                                "pallets_on_ground": 6.81,
+                                "weight": 620.0,
+                                "num_eur_pallets": 0.0
+                              },
+                              {
+                                "order_id": "837",
+                                "delivery_datetime": {
+                                  "date": "2024-07-11",
+                                  "start_time": "05:00:00"
+                                },
+                                "recipient": "SAMADA CLESUD",
+                                "num_pallets": 169.0,
+                                "num_parcels": 120.0,
+                                "pallets_on_ground": 0.92,
+                                "weight": 620.0,
+                                "num_eur_pallets": 0.0
+                              }
+                            ],
+                            "total_num_pallets": 5506.0,
+                            "total_num_parcels": 2596.0,
+                            "total_pallets_on_ground": 22.27,
+                            "total_weight": 620.0,
+                            "total_num_eur_pallets": 0.0
+                          },
+                          {
+                            "load_id": "888198",
+                            "loading_datetime": {
+                              "date": "2024-07-10"
+                            },
+                            "orders": [
+                              {
+                                "order_id": "894",
+                                "delivery_datetime": {
+                                  "date": "2024-07-11",
+                                  "start_time": "01:00:00"
+                                },
+                                "recipient": "MISTRAL ENTRAIGUES",
+                                "num_pallets": 1616.0,
+                                "num_parcels": 1175.0,
+                                "pallets_on_ground": 7.86,
+                                "weight": 620.0,
+                                "num_eur_pallets": 0.0
+                              },
+                              {
+                                "order_id": "679",
+                                "delivery_datetime": {
+                                  "date": "2024-07-11",
+                                  "start_time": "01:00:00"
+                                },
+                                "recipient": "SAMADA CLESUD MATIN",
+                                "num_pallets": 1184.0,
+                                "num_parcels": 1107.0,
+                                "pallets_on_ground": 6.84,
+                                "weight": 620.0,
+                                "num_eur_pallets": 0.0
+                              },
+                              {
+                                "order_id": "828",
+                                "delivery_datetime": {
+                                  "date": "2024-07-11",
+                                  "start_time": "01:00:00"
+                                },
+                                "recipient": "CASINO AIX 2 A/B 5H",
+                                "num_pallets": 445.0,
+                                "num_parcels": 406.0,
+                                "pallets_on_ground": 2.72,
+                                "weight": 620.0,
+                                "num_eur_pallets": 0.0
+                              },
+                              {
+                                "order_id": "838",
+                                "delivery_datetime": {
+                                  "date": "2024-07-11",
+                                  "start_time": "01:00:00"
+                                },
+                                "recipient": "POMONA AIX",
+                                "num_pallets": 19.0,
+                                "num_parcels": 19.0,
+                                "pallets_on_ground": 0.12,
+                                "weight": 620.0,
+                                "num_eur_pallets": 0.0
+                              },
+                              {
+                                "order_id": "851",
+                                "delivery_datetime": {
+                                  "date": "2024-07-11",
+                                  "start_time": "01:00:00"
+                                },
+                                "recipient": "MONTEL DIGNE",
+                                "num_pallets": 111.0,
+                                "num_parcels": 63.0,
+                                "pallets_on_ground": 0.67,
+                                "weight": 620.0,
+                                "num_eur_pallets": 0.0
+                              },
+                              {
+                                "order_id": "852",
+                                "delivery_datetime": {
+                                  "date": "2024-07-11",
+                                  "start_time": "01:00:00"
+                                },
+                                "recipient": "casbas 84 DISTRI",
+                                "num_pallets": 111.0,
+                                "num_parcels": 135.0,
+                                "pallets_on_ground": 0.67,
+                                "weight": 620.0,
+                                "num_eur_pallets": 0.0
+                              },
+                              {
+                                "order_id": "856",
+                                "delivery_datetime": {
+                                  "date": "2024-07-11",
+                                  "start_time": "01:00:00"
+                                },
+                                "recipient": "DPT 13 PAR CHABAS CAVAILLON",
+                                "num_pallets": 111.0,
+                                "num_parcels": 135.0,
+                                "pallets_on_ground": 0.67,
+                                "weight": 620.0,
+                                "num_eur_pallets": 0.0
+                              }
+                            ],
+                            "total_num_pallets": 6456.0,
+                            "total_num_parcels": 4984.0,
+                            "total_pallets_on_ground": 30.62,
+                            "total_weight": 620.0,
+                            "total_num_eur_pallets": 0.0
+                          },
+                          {
+                            "load_id": "888607",
+                            "loading_datetime": {
+                              "date": "2024-07-10"
+                            },
+                            "orders": [
+                              {
+                                "order_id": "861",
+                                "delivery_datetime": {
+                                  "date": "2024-07-11",
+                                  "start_time": "08:00:00"
+                                },
+                                "recipient": "CARREFOUR FUVEAU A/B",
+                                "num_pallets": 3793.0,
+                                "num_parcels": 2395.0,
+                                "pallets_on_ground": 19.0,
+                                "weight": 620.0,
+                                "num_eur_pallets": 0.0
+                              },
+                              {
+                                "order_id": "813",
+                                "delivery_datetime": {
+                                  "date": "2024-07-11",
+                                  "start_time": "11:00:00"
+                                },
+                                "recipient": "AUCHAN LE PONTET A/B",
+                                "num_pallets": 976.0,
+                                "num_parcels": 671.0,
+                                "pallets_on_ground": 4.26,
+                                "weight": 620.0,
+                                "num_eur_pallets": 0.0
+                              }
+                            ],
+                            "total_num_pallets": 4768.0,
+                            "total_num_parcels": 3056.0,
+                            "total_pallets_on_ground": 23.27,
+                            "total_weight": 620.0,
+                            "total_num_eur_pallets": 0.0
+                          },
+                          {
+                            "load_id": "888313",
+                            "loading_datetime": {
+                              "date": "2024-07-10"
+                            },
+                            "orders": [
+                              {
+                                "order_id": "313",
+                                "delivery_datetime": {
+                                  "date": "2024-07-11",
+                                  "start_time": "21:00:00"
+                                },
+                                "recipient": "SCADIF A>B",
+                                "num_pallets": 3798.0,
+                                "num_parcels": 1404.0,
+                                "pallets_on_ground": 12.6,
+                                "weight": 620.0,
+                                "num_eur_pallets": 0.0
+                              },
+                              {
+                                "order_id": "352",
+                                "delivery_datetime": {
+                                  "date": "2024-07-11",
+                                  "start_time": "20:00:00"
+                                },
+                                "recipient": "LOGIDIS COMB A/A",
+                                "num_pallets": 1385.0,
+                                "num_parcels": 209.0,
+                                "pallets_on_ground": 4.3,
+                                "weight": 620.0,
+                                "num_eur_pallets": 0.0
+                              }
+                            ],
+                            "total_num_pallets": 5183.0,
+                            "total_num_parcels": 1694.0,
+                            "total_pallets_on_ground": 16.9,
+                            "total_weight": 620.0,
+                            "total_num_eur_pallets": 0.0
+                          }
+                        ]
+                      },
+                      "mappings": {},
+                      "documents": [
+                        {
+                          "id": "DOC-67890",
+                          "name": "RoadTransportOrder.pdf",
+                          "size": 1048576,
+                          "content": "base64_encoded_string_here",
+                          "mime_type": "application/pdf",
+                          "metadata": {
+                            "is_inline": false,
+                            "url": "https://example.com/transport_order.pdf"
+                          }
+                        }
+                      ],
+                      "action_type": "Creation"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/document_analysis/air/booking/process_booking_confirmation_documents": {
+      "post": {
+        "tags": [
+          "air"
+        ],
+        "summary": "Process Booking Confirmation Documents",
+        "operationId": "process_booking_confirmation_documents_document_analysis_air_booking_process_booking_confirmation_documents_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DocumentProcessingRequest"
+              },
+              "example": {
+                "extraction_type": "AirBookingConfirmation",
+                "documents": [
+                  {
+                    "id": "REF987654321",
+                    "name": "BookingConfirmation.pdf",
+                    "size": 1048576,
+                    "content": "base64_encoded_string_here",
+                    "mime_type": "application/pdf"
+                  }
+                ],
+                "mapping_instructions": [
+                  {
+                    "mapping_collection_id": "client-database",
+                    "path": "client"
+                  }
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AirBookingConfirmationDataConfirmationAnalysisAPIResponse"
+                },
+                "examples": {
+                  "example1": {
+                    "summary": "Example response",
+                    "value": {
+                      "id": "12345",
+                      "request_at": "2023-05-01T12:34:56Z",
+                      "extraction_type": "RoadBookingConfirmation",
+                      "user": {
+                        "object": "user",
+                        "id": "7f3b6f89-2a1c-4d39-9f04-23c7dfb8a234",
+                        "email": "jane.doe@example.com",
+                        "email_verified": true,
+                        "created_at": "2023-05-14T09:22:45Z",
+                        "updated_at": "2024-08-20T14:30:12Z",
+                        "parameters": {
+                          "language": "fr",
+                          "agency_id": "agency_789456123",
+                          "organization_id": "org_654321987",
+                          "theme": "dark"
+                        },
+                        "first_name": "Jane",
+                        "last_name": "Doe",
+                        "profile_picture_url": "https://example.com/profiles/jane_doe.jpg"
+                      },
+                      "extraction": {
+                        "client": {
+                          "account": "AC123456789",
+                          "client_reference": "REF987654321",
+                          "ordering_party": "Global Logistics Ltd.",
+                          "transport_type": "Air",
+                          "incoterm": "CIP"
+                        },
+                        "package": {
+                          "quantity": 10,
+                          "weight": 150.5,
+                          "length": 120.0,
+                          "width": 80.0,
+                          "height": 60.0,
+                          "description": "Electronic devices",
+                          "content": "Laptops and accessories"
+                        },
+                        "services": {
+                          "return_trip": false,
+                          "loading_tailgate": true,
+                          "economical": false,
+                          "urgent": true,
+                          "dangerous_goods": false
+                        },
+                        "sender": {
+                          "company_name": "Tech Supplies Co.",
+                          "observations": "Handle with care. Fragile items.",
+                          "address": {
+                            "line1": "1234 Elm Street",
+                            "line2": "Suite 500",
+                            "city": "San Francisco",
+                            "state": "CA",
+                            "postal_code": "94111",
+                            "country": "USA"
+                          },
+                          "phone_number": "+1-555-1234-567",
+                          "email_address": "sender@techsupplies.com",
+                          "pickup_datetime": {
+                            "date": "2024-08-25",
+                            "start_time": "08:00",
+                            "end_time": "10:00"
+                          }
+                        },
+                        "recipient": {
+                          "company_name": "Digital Retail Ltd.",
+                          "observations": "Deliver before noon",
+                          "address": {
+                            "line1": "7890 Market Avenue",
+                            "line2": "Building 2",
+                            "city": "New York",
+                            "state": "NY",
+                            "postal_code": "10001",
+                            "country": "USA"
+                          },
+                          "phone_number": "+1-555-9876-543",
+                          "email_address": "recipient@digitalretail.com",
+                          "delivery_datetime": {
+                            "date": "2024-08-26",
+                            "start_time": "09:00",
+                            "end_time": "11:00"
+                          }
+                        }
+                      },
+                      "documents": [
+                        {
+                          "id": "DOC-67890",
+                          "name": "BookingConfirmation.pdf",
+                          "size": 1048576,
+                          "content": "base64_encoded_string_here",
+                          "mime_type": "application/pdf",
+                          "metadata": {
+                            "is_inline": false,
+                            "url": "https://example.com/booking_confirmation.pdf"
+                          }
+                        }
+                      ],
+                      "action_type": "Creation"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/matcherdb/stored_object/{file_path}": {
+      "get": {
+        "tags": [
+          "matcherdb"
+        ],
+        "summary": "Get Stored Object",
+        "operationId": "get_stored_object_matcherdb_stored_object__file_path__get",
         "parameters": [
           {
-            "name": "id",
+            "name": "file_path",
             "in": "path",
-            "description": "ID of plant to delete",
             "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int64"
+              "type": "string",
+              "title": "File Path"
             }
           }
         ],
         "responses": {
-          "204": {
-            "description": "Plant deleted",
-            "content": {}
-          },
-          "400": {
-            "description": "unexpected error",
+          "200": {
+            "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "title": "Response Get Stored Object Matcherdb Stored Object  File Path  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/matcherdb/objects/add/": {
+      "post": {
+        "tags": [
+          "matcherdb"
+        ],
+        "summary": "Add Objects",
+        "operationId": "add_objects_matcherdb_objects_add__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddObjectRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddObjectResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/matcherdb/objects/delete/": {
+      "delete": {
+        "tags": [
+          "matcherdb"
+        ],
+        "summary": "Delete Object",
+        "operationId": "delete_object_matcherdb_objects_delete__delete",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteObjectRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteObjectResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/matcherdb/objects/query/": {
+      "post": {
+        "tags": [
+          "matcherdb"
+        ],
+        "summary": "Query Objects",
+        "operationId": "query_objects_matcherdb_objects_query__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QueryVectorRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryVectorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/matcherdb/objects/query_prefix/": {
+      "post": {
+        "tags": [
+          "matcherdb"
+        ],
+        "summary": "Query Prefix",
+        "operationId": "query_prefix_matcherdb_objects_query_prefix__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QueryPrefixRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryPrefixResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/matcherdb/objects/query_with_repr/": {
+      "post": {
+        "tags": [
+          "matcherdb"
+        ],
+        "summary": "Query Objects With Repr",
+        "operationId": "query_objects_with_repr_matcherdb_objects_query_with_repr__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QueryVectorRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryVectorWithReprResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/matcherdb/objects/query_prefix_with_repr/": {
+      "post": {
+        "tags": [
+          "matcherdb"
+        ],
+        "summary": "Query Prefix With Repr",
+        "operationId": "query_prefix_with_repr_matcherdb_objects_query_prefix_with_repr__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QueryPrefixRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryPrefixWithReprResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/matcherdb/objects/peek/": {
+      "post": {
+        "tags": [
+          "matcherdb"
+        ],
+        "summary": "Peek Objects",
+        "operationId": "peek_objects_matcherdb_objects_peek__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PeekRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PeekResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/matcherdb/collection_stats/{collection_name}": {
+      "get": {
+        "tags": [
+          "matcherdb"
+        ],
+        "summary": "Get Collection Stats",
+        "operationId": "get_collection_stats_matcherdb_collection_stats__collection_name__get",
+        "parameters": [
+          {
+            "name": "collection_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Unique handle identifying the collection",
+              "title": "Collection Name"
+            },
+            "description": "Unique handle identifying the collection",
+            "example": "client-database"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StatsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/matcherdb/collection_count/{collection_name}": {
+      "get": {
+        "tags": [
+          "matcherdb"
+        ],
+        "summary": "Get Collection Count",
+        "operationId": "get_collection_count_matcherdb_collection_count__collection_name__get",
+        "parameters": [
+          {
+            "name": "collection_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Unique handle identifying the collection",
+              "title": "Collection Name"
+            },
+            "description": "Unique handle identifying the collection",
+            "example": "client-database"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "title": "Response Get Collection Count Matcherdb Collection Count  Collection Name  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/matcherdb/collection/{collection_name}/": {
+      "delete": {
+        "tags": [
+          "matcherdb"
+        ],
+        "summary": "Delete Collection Endpoint",
+        "operationId": "delete_collection_endpoint_matcherdb_collection__collection_name___delete",
+        "parameters": [
+          {
+            "name": "collection_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Unique handle identifying the collection",
+              "title": "Collection Name"
+            },
+            "description": "Unique handle identifying the collection",
+            "example": "client-database"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteCollectionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "matcherdb"
+        ],
+        "summary": "Get Collection Endpoint",
+        "operationId": "get_collection_endpoint_matcherdb_collection__collection_name___get",
+        "parameters": [
+          {
+            "name": "collection_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Unique handle identifying the collection",
+              "title": "Collection Name"
+            },
+            "description": "Unique handle identifying the collection",
+            "example": "client-database"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CollectionParameters"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/matcherdb/create_collection/": {
+      "post": {
+        "tags": [
+          "matcherdb"
+        ],
+        "summary": "Create Collection Endpoint",
+        "operationId": "create_collection_endpoint_matcherdb_create_collection__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCollectionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CollectionParameters"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/matcherdb/list_collections/": {
+      "get": {
+        "tags": [
+          "matcherdb"
+        ],
+        "summary": "List Collections Endpoint",
+        "operationId": "list_collections_endpoint_matcherdb_list_collections__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListCollectionsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/matcherdb/list_collection_informations/": {
+      "get": {
+        "tags": [
+          "matcherdb"
+        ],
+        "summary": "Get Collection Parameters",
+        "operationId": "get_collection_parameters_matcherdb_list_collection_informations__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CollectionParameters"
+                  },
+                  "type": "array",
+                  "title": "Response Get Collection Parameters Matcherdb List Collection Informations  Get"
                 }
               }
             }
@@ -132,63 +1591,3390 @@
   },
   "components": {
     "schemas": {
-      "Plant": {
-        "required": [
-          "name"
-        ],
-        "type": "object",
+      "AddObjectRequest": {
         "properties": {
-          "name": {
-            "description": "The name of the plant",
-            "type": "string"
+          "objects": {
+            "items": {},
+            "type": "array",
+            "title": "Objects",
+            "description": "The objects to add to the collection",
+            "default": []
           },
-          "tag": {
-            "description": "Tag to specify the type",
-            "type": "string"
+          "ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Ids",
+            "description": "The internal codes of the objects",
+            "default": []
+          },
+          "collection_parameters": {
+            "$ref": "#/components/schemas/CollectionParameters",
+            "description": "The parameters of the collection"
           }
-        }
+        },
+        "type": "object",
+        "required": [
+          "collection_parameters"
+        ],
+        "title": "AddObjectRequest"
       },
-      "NewPlant": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Plant"
+      "AddObjectResponse": {
+        "properties": {
+          "result": {
+            "type": "string",
+            "title": "Result",
+            "description": "Result of the upsert operation",
+            "examples": [
+              "Object added successfully"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "result"
+        ],
+        "title": "AddObjectResponse"
+      },
+      "AirBookingConfirmationData": {
+        "properties": {
+          "client": {
+            "$ref": "#/components/schemas/AirFreightClient",
+            "description": "Client data",
+            "default": {}
           },
-          {
-            "required": [
-              "id"
-            ],
-            "type": "object",
-            "properties": {
-              "id": {
-                "description": "Identification number of the plant",
-                "type": "integer",
-                "format": "int64"
-              }
+          "package": {
+            "$ref": "#/components/schemas/AirPackage",
+            "description": "Package data",
+            "default": {}
+          },
+          "services": {
+            "$ref": "#/components/schemas/AirServices",
+            "description": "Air services data",
+            "default": {
+              "return_trip": false,
+              "loading_tailgate": false,
+              "economical": false,
+              "urgent": false,
+              "dangerous_goods": false
+            }
+          },
+          "sender": {
+            "$ref": "#/components/schemas/SenderData",
+            "description": "Sender data",
+            "default": {
+              "address": {},
+              "pickup_datetime": {}
+            }
+          },
+          "recipient": {
+            "$ref": "#/components/schemas/RecipientData",
+            "description": "Recipient data",
+            "default": {
+              "address": {},
+              "delivery_datetime": {}
             }
           }
-        ]
-      },
-      "Error": {
-        "required": [
-          "error",
-          "message"
-        ],
+        },
         "type": "object",
+        "title": "AirBookingConfirmationData"
+      },
+      "AirBookingConfirmationDataConfirmationAnalysisAPIResponse": {
         "properties": {
-          "error": {
-            "type": "integer",
-            "format": "int32"
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Unique identifier of the analysis"
           },
-          "message": {
-            "type": "string"
+          "is_demo": {
+            "type": "boolean",
+            "title": "Is Demo",
+            "default": false
+          },
+          "extraction_source": {
+            "type": "string",
+            "enum": [
+              "mailbox",
+              "plugin"
+            ],
+            "title": "Extraction Source",
+            "description": "Source of the document analysis"
+          },
+          "extraction_status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "pending",
+              "failed",
+              "sent_to_tms",
+              "need_review"
+            ],
+            "title": "Extraction Status",
+            "description": "Status of the extraction"
+          },
+          "user": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/cube_server__services__iam__models__User"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "User identity"
+          },
+          "request_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Request At",
+            "description": "Timestamp of the analysis"
+          },
+          "extraction_type": {
+            "type": "string",
+            "enum": [
+              "RoadBookingConfirmation",
+              "RoadTransportOrder",
+              "AirBookingConfirmation"
+            ],
+            "title": "Extraction Type",
+            "description": "Type of the document analyzed"
+          },
+          "extraction": {
+            "$ref": "#/components/schemas/AirBookingConfirmationData"
+          },
+          "uncertainties": {
+            "title": "Uncertainties",
+            "description": "Uncertainties of the fields extracted from the document"
+          },
+          "mappings": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/MappingObject"
+            },
+            "type": "object",
+            "title": "Mappings",
+            "description": "Mapping between internal codes, ids and the real objects"
+          },
+          "action_type": {
+            "type": "string",
+            "enum": [
+              "Creation",
+              "Modification",
+              "Deletion"
+            ],
+            "title": "Action Type",
+            "description": "Type of the action taken by the assistant"
+          },
+          "documents": {
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/BaseMIMEData"
+                },
+                {
+                  "$ref": "#/components/schemas/MIMEData-Output"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Documents",
+            "description": "Documents uploaded for the analysis"
           }
-        }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "extraction_source",
+          "extraction_status",
+          "request_at",
+          "extraction_type",
+          "extraction",
+          "uncertainties",
+          "mappings",
+          "action_type",
+          "documents"
+        ],
+        "title": "AirBookingConfirmationDataConfirmationAnalysisAPIResponse"
+      },
+      "AirFreightClient": {
+        "properties": {
+          "account": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Account",
+            "description": "Client account identifier"
+          },
+          "client_reference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Client Reference",
+            "description": "Client's reference for this shipment"
+          },
+          "ordering_party": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ordering Party",
+            "description": "Name of the party ordering the shipment"
+          },
+          "transport_type": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "Air",
+                  "Road"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Transport Type",
+            "description": "Type of transport: Air or Road"
+          },
+          "incoterm": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Incoterm"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "International Commercial Terms for the shipment"
+          }
+        },
+        "type": "object",
+        "title": "AirFreightClient"
+      },
+      "AirPackage": {
+        "properties": {
+          "quantity": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quantity",
+            "description": "Number of packages in the shipment"
+          },
+          "weight": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weight",
+            "description": "Weight of the package in kg"
+          },
+          "length": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Length",
+            "description": "Length of the package in cm"
+          },
+          "width": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Width",
+            "description": "Width of the package in cm"
+          },
+          "height": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Height",
+            "description": "Height of the package in cm"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description",
+            "description": "Brief description of the package contents"
+          },
+          "content": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content",
+            "description": "Detailed description of the package contents"
+          }
+        },
+        "type": "object",
+        "title": "AirPackage"
+      },
+      "AirServices": {
+        "properties": {
+          "return_trip": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Return Trip",
+            "description": "Indicates if a return trip is required",
+            "default": false
+          },
+          "loading_tailgate": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Loading Tailgate",
+            "description": "Indicates if a loading tailgate is needed",
+            "default": false
+          },
+          "economical": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Economical",
+            "description": "Indicates if economical shipping is requested",
+            "default": false
+          },
+          "urgent": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Urgent",
+            "description": "Indicates if urgent shipping is requested",
+            "default": false
+          },
+          "dangerous_goods": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dangerous Goods",
+            "description": "Indicates if the shipment contains dangerous goods",
+            "default": false
+          },
+          "departure_airport": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Departure Airport",
+            "description": "Departure airport"
+          },
+          "arrival_airport": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Arrival Airport",
+            "description": "Arrival airport"
+          }
+        },
+        "type": "object",
+        "title": "AirServices"
+      },
+      "AttachmentMetadata-Input": {
+        "properties": {
+          "is_inline": {
+            "type": "boolean",
+            "title": "Is Inline",
+            "description": "Whether the attachment is inline or not.",
+            "default": false
+          },
+          "inline_cid": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Inline Cid",
+            "description": "CID reference for inline attachments."
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url",
+            "description": "URL of the attachment."
+          },
+          "display_metadata": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DisplayMetadata"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Display Metadata"
+          },
+          "ocr": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OCR-Input"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "OCR data for the attachment."
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source",
+            "description": "Source of the attachment in dot notation attachment_id, or email_id.attachment_id, allow us to keep track of the origin of the attachment, for search purposes. "
+          }
+        },
+        "type": "object",
+        "title": "AttachmentMetadata"
+      },
+      "AttachmentMetadata-Output": {
+        "properties": {
+          "is_inline": {
+            "type": "boolean",
+            "title": "Is Inline",
+            "description": "Whether the attachment is inline or not.",
+            "default": false
+          },
+          "inline_cid": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Inline Cid",
+            "description": "CID reference for inline attachments."
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url",
+            "description": "URL of the attachment."
+          },
+          "display_metadata": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DisplayMetadata"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Display Metadata"
+          },
+          "ocr": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OCR-Output"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "OCR data for the attachment."
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source",
+            "description": "Source of the attachment in dot notation attachment_id, or email_id.attachment_id, allow us to keep track of the origin of the attachment, for search purposes. "
+          }
+        },
+        "type": "object",
+        "title": "AttachmentMetadata"
+      },
+      "BaseMIMEData": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "SHA-256 hash of the base64-encoded content, serving as a unique identifier."
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Original filename of the attachment."
+          },
+          "size": {
+            "type": "integer",
+            "title": "Size",
+            "description": "Size of the base64-encoded content in bytes."
+          },
+          "mime_type": {
+            "type": "string",
+            "title": "Mime Type",
+            "description": "MIME type of the attachment, determining how it should be handled."
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/AttachmentMetadata-Output",
+            "description": "Additional metadata about the attachment."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "size",
+          "mime_type",
+          "metadata"
+        ],
+        "title": "BaseMIMEData"
+      },
+      "ClientData": {
+        "properties": {
+          "VAT_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vat Number",
+            "description": "VAT number of the client."
+          },
+          "company_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Company Name",
+            "description": "Name of the company."
+          },
+          "address": {
+            "$ref": "#/components/schemas/cubeblock__dataclasses__primitives__AddressData",
+            "description": "Address of the client.",
+            "default": {}
+          },
+          "phone_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone Number",
+            "description": "Phone number of the client."
+          },
+          "email_address": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "email"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email Address",
+            "description": "Email address of the client."
+          }
+        },
+        "type": "object",
+        "title": "ClientData"
+      },
+      "CollectionParameters": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Unique handle identifying the collection",
+            "examples": [
+              "client-database"
+            ]
+          },
+          "object_model": {
+            "type": "string",
+            "enum": [
+              "RoadBookingConfirmation.ClientData",
+              "RoadBookingConfirmation.AddressData",
+              "RoadBookingConfirmation.SenderData",
+              "RoadBookingConfirmation.RecipientData"
+            ],
+            "title": "Object Model",
+            "description": "The model of the object in the collection",
+            "examples": [
+              "ClientData"
+            ]
+          },
+          "metric": {
+            "type": "string",
+            "enum": [
+              "cosine",
+              "euclidean",
+              "dotproduct"
+            ],
+            "title": "Metric",
+            "description": "The metric used to compare the vectors",
+            "examples": [
+              "cosine"
+            ]
+          },
+          "embedding_size": {
+            "type": "string",
+            "enum": [
+              "small",
+              "large"
+            ],
+            "title": "Embedding Size",
+            "description": "Size of the embedding",
+            "examples": [
+              "small"
+            ]
+          },
+          "organization_id": {
+            "type": "string",
+            "title": "Organization Id",
+            "description": "Unique id of the organization",
+            "examples": [
+              "cube-ai"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "object_model",
+          "metric",
+          "embedding_size",
+          "organization_id"
+        ],
+        "title": "CollectionParameters"
+      },
+      "CreateCollectionRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Unique handle identifying the collection",
+            "examples": [
+              "client-database"
+            ]
+          },
+          "object_model": {
+            "type": "string",
+            "enum": [
+              "RoadBookingConfirmation.ClientData",
+              "RoadBookingConfirmation.AddressData",
+              "RoadBookingConfirmation.SenderData",
+              "RoadBookingConfirmation.RecipientData"
+            ],
+            "title": "Object Model",
+            "description": "The model of the object in the collection",
+            "examples": [
+              "ClientData"
+            ]
+          },
+          "metric": {
+            "type": "string",
+            "enum": [
+              "cosine",
+              "euclidean",
+              "dotproduct"
+            ],
+            "title": "Metric",
+            "description": "The metric used to compare the vectors",
+            "examples": [
+              "cosine"
+            ]
+          },
+          "embedding_size": {
+            "type": "string",
+            "enum": [
+              "small",
+              "large"
+            ],
+            "title": "Embedding Size",
+            "description": "Size of the embedding",
+            "examples": [
+              "small"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "object_model",
+          "metric",
+          "embedding_size"
+        ],
+        "title": "CreateCollectionRequest"
+      },
+      "DangerousGoodsInfoData": {
+        "properties": {
+          "weight": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weight",
+            "description": "Weight of the dangerous good (in kilograms)"
+          },
+          "UN_code": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Un Code",
+            "description": "UN code of the dangerous good"
+          },
+          "UN_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Un Label",
+            "description": "UN label of the dangerous good"
+          },
+          "UN_class": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Un Class",
+            "description": "UN class of the dangerous good"
+          },
+          "UN_packing_group": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "I",
+                  "II",
+                  "III"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Un Packing Group",
+            "description": "UN packing group of the dangerous good"
+          },
+          "ADR_tunnel_code": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "B",
+                  "B1000C",
+                  "B/D",
+                  "B/E",
+                  "C",
+                  "C5000D",
+                  "C/D",
+                  "C/E",
+                  "D",
+                  "D/E",
+                  "E",
+                  "-"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Adr Tunnel Code",
+            "description": "ADR tunnel code of the dangerous good"
+          }
+        },
+        "type": "object",
+        "title": "DangerousGoodsInfoData"
+      },
+      "DeleteCollectionResponse": {
+        "properties": {
+          "result": {
+            "type": "string",
+            "title": "Result",
+            "description": "Result of the deletion operation",
+            "examples": [
+              "Collection deleted successfully"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "result"
+        ],
+        "title": "DeleteCollectionResponse"
+      },
+      "DeleteObjectRequest": {
+        "properties": {
+          "ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Ids",
+            "description": "The internal codes of the objects to delete",
+            "default": []
+          },
+          "collection_parameters": {
+            "$ref": "#/components/schemas/CollectionParameters",
+            "description": "The parameters of the collection"
+          }
+        },
+        "type": "object",
+        "required": [
+          "collection_parameters"
+        ],
+        "title": "DeleteObjectRequest"
+      },
+      "DeleteObjectResponse": {
+        "properties": {
+          "result": {
+            "type": "string",
+            "title": "Result",
+            "description": "Result of the deletion operation",
+            "examples": [
+              "Object deleted successfully"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "result"
+        ],
+        "title": "DeleteObjectResponse"
+      },
+      "DimensionsData": {
+        "properties": {
+          "loading_meters": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Loading Meters",
+            "description": "Measurement of how much space the goods will take up in a vehicle (in meters)"
+          },
+          "volume": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Volume",
+            "description": "Volume of the good (in cubic meters)"
+          }
+        },
+        "type": "object",
+        "title": "DimensionsData"
+      },
+      "DisplayMetadata": {
+        "properties": {
+          "url": {
+            "type": "string",
+            "title": "Url",
+            "description": "URL of the attachment for display purposes."
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "image",
+              "pdf"
+            ],
+            "title": "Type",
+            "description": "Type of the attachment, determining how it should be handled."
+          }
+        },
+        "type": "object",
+        "required": [
+          "url",
+          "type"
+        ],
+        "title": "DisplayMetadata"
+      },
+      "DocumentProcessingRequest": {
+        "properties": {
+          "extraction_type": {
+            "type": "string",
+            "enum": [
+              "RoadBookingConfirmation",
+              "RoadTransportOrder",
+              "AirBookingConfirmation"
+            ],
+            "title": "Extraction Type",
+            "description": "Type of the document analyzed"
+          },
+          "documents": {
+            "items": {
+              "$ref": "#/components/schemas/MIMEData-Input"
+            },
+            "type": "array",
+            "title": "Documents",
+            "description": "List of documents analyzed"
+          },
+          "mapping_instructions": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/MappingInstruction"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mapping Instructions",
+            "description": "Mapping instructions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "extraction_type",
+          "documents"
+        ],
+        "title": "DocumentProcessingRequest"
+      },
+      "GoodsData": {
+        "properties": {
+          "packing": {
+            "$ref": "#/components/schemas/PackingData",
+            "description": "Packing details of the good",
+            "default": {}
+          },
+          "weight": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weight",
+            "description": "Weight of the good (in kilograms)"
+          },
+          "dimensions": {
+            "$ref": "#/components/schemas/DimensionsData",
+            "description": "Dimensions of the good",
+            "default": {}
+          },
+          "temperature_infos": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TemperatureInfosData"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Temperature infos of the good",
+            "default": {}
+          },
+          "dangerous_goods_infos": {
+            "items": {
+              "$ref": "#/components/schemas/DangerousGoodsInfoData"
+            },
+            "type": "array",
+            "title": "Dangerous Goods Infos",
+            "description": "Dangerous goods infos of the good",
+            "default": []
+          }
+        },
+        "type": "object",
+        "title": "GoodsData"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "Incoterm": {
+        "type": "string",
+        "enum": [
+          "EXW",
+          "FCA",
+          "FAS",
+          "FOB",
+          "CPT",
+          "CFR",
+          "CIF",
+          "CIP",
+          "DPU",
+          "DAP",
+          "DDP",
+          "DAF",
+          "DAT",
+          "DES",
+          "DEQ",
+          "DDU"
+        ],
+        "title": "Incoterm"
+      },
+      "ListCollectionsResponse": {
+        "properties": {
+          "result": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Result",
+            "description": "The list of collections",
+            "examples": [
+              [
+                "client-database",
+                "product-database"
+              ]
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "result"
+        ],
+        "title": "ListCollectionsResponse"
+      },
+      "LoadData": {
+        "properties": {
+          "load_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Load Id",
+            "description": "Load ID"
+          },
+          "loading_datetime": {
+            "$ref": "#/components/schemas/PickupDeliveryDatetimeData",
+            "description": "Loading date and time in ISO 8601 format",
+            "default": {}
+          },
+          "orders": {
+            "items": {
+              "$ref": "#/components/schemas/OrdersData"
+            },
+            "type": "array",
+            "title": "Orders",
+            "description": "List of orders data",
+            "default": []
+          },
+          "total_weight": {
+            "$ref": "#/components/schemas/WeightData",
+            "description": "Total Weight of the load (in kilograms)"
+          },
+          "total_pallets_informations": {
+            "$ref": "#/components/schemas/PalletsData",
+            "description": "Total pallets informations of the load"
+          },
+          "total_parcels_informations": {
+            "$ref": "#/components/schemas/ParcelsData",
+            "description": "Total parcels informations of the load"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_weight",
+          "total_pallets_informations",
+          "total_parcels_informations"
+        ],
+        "title": "LoadData"
+      },
+      "MIMEData-Input": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "SHA-256 hash of the base64-encoded content, serving as a unique identifier."
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Original filename of the attachment."
+          },
+          "size": {
+            "type": "integer",
+            "title": "Size",
+            "description": "Size of the base64-encoded content in bytes."
+          },
+          "mime_type": {
+            "type": "string",
+            "title": "Mime Type",
+            "description": "MIME type of the attachment, determining how it should be handled."
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/AttachmentMetadata-Input",
+            "description": "Additional metadata about the attachment."
+          },
+          "content": {
+            "type": "string",
+            "title": "Content",
+            "description": "Base64-encoded content of the attachment."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "size",
+          "mime_type",
+          "metadata",
+          "content"
+        ],
+        "title": "MIMEData"
+      },
+      "MIMEData-Output": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "SHA-256 hash of the base64-encoded content, serving as a unique identifier."
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Original filename of the attachment."
+          },
+          "size": {
+            "type": "integer",
+            "title": "Size",
+            "description": "Size of the base64-encoded content in bytes."
+          },
+          "mime_type": {
+            "type": "string",
+            "title": "Mime Type",
+            "description": "MIME type of the attachment, determining how it should be handled."
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/AttachmentMetadata-Output",
+            "description": "Additional metadata about the attachment."
+          },
+          "content": {
+            "type": "string",
+            "title": "Content",
+            "description": "Base64-encoded content of the attachment."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "size",
+          "mime_type",
+          "metadata",
+          "content"
+        ],
+        "title": "MIMEData"
+      },
+      "MappingInstruction": {
+        "properties": {
+          "mapping_collection_id": {
+            "type": "string",
+            "title": "Mapping Collection Id",
+            "description": "Id of a previously created mapping collection.",
+            "examples": [
+              "client-database-123"
+            ]
+          },
+          "path": {
+            "type": "string",
+            "title": "Path",
+            "description": "Path to the object to map in the extraction.",
+            "examples": [
+              "client",
+              "shipments.recipient"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "mapping_collection_id",
+          "path"
+        ],
+        "title": "MappingInstruction"
+      },
+      "MappingObject": {
+        "properties": {
+          "internal_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Internal Code"
+          },
+          "extracted_object": {
+            "title": "Extracted Object",
+            "default": {}
+          },
+          "mapped_object": {
+            "title": "Mapped Object",
+            "default": {}
+          }
+        },
+        "type": "object",
+        "required": [
+          "internal_code"
+        ],
+        "title": "MappingObject"
+      },
+      "OCR-Input": {
+        "properties": {
+          "pages": {
+            "items": {
+              "$ref": "#/components/schemas/Page-Input"
+            },
+            "type": "array",
+            "title": "Pages"
+          }
+        },
+        "type": "object",
+        "required": [
+          "pages"
+        ],
+        "title": "OCR"
+      },
+      "OCR-Output": {
+        "properties": {
+          "pages": {
+            "items": {
+              "$ref": "#/components/schemas/Page-Output"
+            },
+            "type": "array",
+            "title": "Pages"
+          }
+        },
+        "type": "object",
+        "required": [
+          "pages"
+        ],
+        "title": "OCR"
+      },
+      "OrdersData": {
+        "properties": {
+          "order_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Order Id",
+            "description": "Order ID"
+          },
+          "recipient_informations": {
+            "$ref": "#/components/schemas/RecipientInformations",
+            "description": "Recipient informations of the order line"
+          },
+          "weight": {
+            "$ref": "#/components/schemas/WeightData",
+            "description": "Weight of the order line"
+          },
+          "number_of_elements": {
+            "type": "number",
+            "title": "Number Of Elements",
+            "description": "Number of elements in the order line, be it a parcel or a pallet",
+            "default": 0
+          },
+          "packing_type": {
+            "$ref": "#/components/schemas/PackingUnit",
+            "description": "Type of packing. Parcels or Pallets. To give you some grounding, a truck can only host 34 pallets, while it can host hundreds of parcels."
+          },
+          "num_eur_pallets": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Num Eur Pallets",
+            "description": "If the packing is a pallet, number of EUR pallets among the pallets of the order line. default is 0"
+          },
+          "pallets_on_ground": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pallets On Ground",
+            "description": "If the packing is a pallet, ground_space occupied by the pallets of the order line. default is 0"
+          }
+        },
+        "type": "object",
+        "required": [
+          "recipient_informations",
+          "weight",
+          "packing_type"
+        ],
+        "title": "OrdersData"
+      },
+      "PackingData": {
+        "properties": {
+          "packing_type": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "pallet",
+                  "parcel",
+                  "bulk",
+                  "container",
+                  "other"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Packing Type",
+            "description": "Type of packing"
+          },
+          "units": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Units",
+            "description": "Number of units"
+          },
+          "observation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Observation",
+            "description": "Observation about the packing"
+          },
+          "number_eur_pallet": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Number Eur Pallet",
+            "description": "Number of EUR/EPAL pallets"
+          },
+          "supplementary_parcels": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Supplementary Parcels",
+            "description": "Number of additional parcels"
+          },
+          "pallets_on_ground": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pallets On Ground",
+            "description": "Equivalent of pallets on the ground"
+          }
+        },
+        "type": "object",
+        "title": "PackingData"
+      },
+      "PackingUnit": {
+        "type": "string",
+        "enum": [
+          "pallet",
+          "parcel"
+        ],
+        "title": "PackingUnit"
+      },
+      "Page-Input": {
+        "properties": {
+          "page_number": {
+            "type": "integer",
+            "title": "Page Number"
+          },
+          "width": {
+            "type": "integer",
+            "title": "Width"
+          },
+          "height": {
+            "type": "integer",
+            "title": "Height"
+          },
+          "blocks": {
+            "items": {
+              "$ref": "#/components/schemas/TextBox"
+            },
+            "type": "array",
+            "title": "Blocks"
+          },
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/TextBox"
+            },
+            "type": "array",
+            "title": "Lines"
+          }
+        },
+        "type": "object",
+        "required": [
+          "page_number",
+          "width",
+          "height",
+          "blocks",
+          "lines"
+        ],
+        "title": "Page"
+      },
+      "Page-Output": {
+        "properties": {
+          "page_number": {
+            "type": "integer",
+            "title": "Page Number"
+          },
+          "width": {
+            "type": "integer",
+            "title": "Width"
+          },
+          "height": {
+            "type": "integer",
+            "title": "Height"
+          },
+          "blocks": {
+            "items": {
+              "$ref": "#/components/schemas/TextBox"
+            },
+            "type": "array",
+            "title": "Blocks"
+          },
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/TextBox"
+            },
+            "type": "array",
+            "title": "Lines"
+          }
+        },
+        "type": "object",
+        "required": [
+          "page_number",
+          "width",
+          "height",
+          "blocks",
+          "lines"
+        ],
+        "title": "Page"
+      },
+      "PalletsData": {
+        "properties": {
+          "number_pallets": {
+            "type": "number",
+            "title": "Number Pallets",
+            "description": "Total number of pallets in the load",
+            "default": 0
+          },
+          "num_eur_pallets": {
+            "type": "number",
+            "title": "Num Eur Pallets",
+            "description": "Total number of EUR pallets in the load",
+            "default": 0
+          },
+          "pallets_on_ground": {
+            "type": "number",
+            "title": "Pallets On Ground",
+            "description": "Total number of pallets on the ground in the load",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "title": "PalletsData"
+      },
+      "ParcelsData": {
+        "properties": {
+          "number_parcels": {
+            "type": "number",
+            "title": "Number Parcels",
+            "description": "Total number of parcels in the load",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "title": "ParcelsData"
+      },
+      "PeekRequest": {
+        "properties": {
+          "n": {
+            "type": "integer",
+            "title": "N",
+            "description": "The number of elements to peek",
+            "default": 1
+          },
+          "collection_parameters": {
+            "$ref": "#/components/schemas/CollectionParameters",
+            "description": "The parameters of the collection"
+          }
+        },
+        "type": "object",
+        "required": [
+          "collection_parameters"
+        ],
+        "title": "PeekRequest"
+      },
+      "PeekResponse": {
+        "properties": {
+          "result": {
+            "items": {
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Result",
+            "description": "The result of the peek operation",
+            "examples": [
+              {
+                "id": "client_1839391",
+                "metadata": {
+                  "VAT_number": "null",
+                  "address.city": "Town",
+                  "address.country": "null",
+                  "address.line1": "123 Oak St",
+                  "address.line2": "Suite 100",
+                  "address.postal_code": "12345",
+                  "address.state": "State",
+                  "company_name": "Carrier One",
+                  "email_address": "null",
+                  "phone_number": "null"
+                }
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "result"
+        ],
+        "title": "PeekResponse"
+      },
+      "PickupDeliveryDatetimeData": {
+        "properties": {
+          "date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date",
+            "description": "Date of the pickup/delivery. ISO 8601 Date Format: YYYY-MM-DD"
+          },
+          "start_time": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Time",
+            "description": "Start time of the pickup/delivery. ISO 8601 Time Format: hh:mm"
+          },
+          "end_time": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Time",
+            "description": "End time of the pickup/delivery. ISO 8601 Time Format: hh:mm"
+          }
+        },
+        "type": "object",
+        "title": "PickupDeliveryDatetimeData"
+      },
+      "Point": {
+        "properties": {
+          "x": {
+            "type": "integer",
+            "title": "X"
+          },
+          "y": {
+            "type": "integer",
+            "title": "Y"
+          }
+        },
+        "type": "object",
+        "required": [
+          "x",
+          "y"
+        ],
+        "title": "Point"
+      },
+      "PrefixSearchResult": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "The internal code of the object",
+            "examples": [
+              "ACMECORP123ELMSTRT"
+            ]
+          },
+          "object": {
+            "title": "Object",
+            "description": "The object that was found in the search"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "object"
+        ],
+        "title": "PrefixSearchResult"
+      },
+      "PrefixSearchWithReprResult": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "The internal code of the object",
+            "examples": [
+              "ACMECORP123ELMSTRT"
+            ]
+          },
+          "representation": {
+            "type": "string",
+            "title": "Representation",
+            "description": "A nice string representation of the object that will be transmitted to the frontend",
+            "examples": [
+              "ACME Corp - 123 Elm Street - Suite 500 - London, Greater London, WC2N 5DU, GB"
+            ]
+          },
+          "object": {
+            "title": "Object",
+            "description": "The object that was found in the search"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "representation",
+          "object"
+        ],
+        "title": "PrefixSearchWithReprResult"
+      },
+      "QueryPrefixRequest": {
+        "properties": {
+          "code_prefix": {
+            "type": "string",
+            "title": "Code Prefix",
+            "description": "The prefix to search for",
+            "examples": [
+              "client"
+            ]
+          },
+          "n_results": {
+            "type": "integer",
+            "title": "N Results",
+            "description": "The number of results to return",
+            "examples": [
+              2
+            ]
+          },
+          "collection_parameters": {
+            "$ref": "#/components/schemas/CollectionParameters",
+            "description": "The parameters of the collection"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code_prefix",
+          "n_results",
+          "collection_parameters"
+        ],
+        "title": "QueryPrefixRequest"
+      },
+      "QueryPrefixResponse": {
+        "properties": {
+          "code_prefix": {
+            "type": "string",
+            "title": "Code Prefix",
+            "description": "The prefix to search for",
+            "examples": [
+              "client"
+            ]
+          },
+          "n_results": {
+            "type": "integer",
+            "title": "N Results",
+            "description": "The number of results to return",
+            "examples": [
+              2
+            ]
+          },
+          "collection_parameters": {
+            "$ref": "#/components/schemas/CollectionParameters",
+            "description": "The parameters of the collection"
+          },
+          "matches": {
+            "items": {
+              "$ref": "#/components/schemas/PrefixSearchResult"
+            },
+            "type": "array",
+            "title": "Matches",
+            "description": "The objects that were found in the search",
+            "default": [],
+            "examples": [
+              {
+                "id": "client_1839391",
+                "object": {
+                  "address": {
+                    "city": "Town",
+                    "line1": "123 Oak St",
+                    "line2": "Suite 100",
+                    "postal_code": "12345",
+                    "state": "State"
+                  },
+                  "company_name": "Carrier One"
+                }
+              },
+              {
+                "id": "client_18923843",
+                "object": {
+                  "address": {
+                    "city": "City",
+                    "line1": "456 Elm St",
+                    "line2": "Suite 200",
+                    "postal_code": "54321",
+                    "state": "State"
+                  },
+                  "company_name": "Carrier Two"
+                }
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "code_prefix",
+          "n_results",
+          "collection_parameters"
+        ],
+        "title": "QueryPrefixResponse"
+      },
+      "QueryPrefixWithReprResponse": {
+        "properties": {
+          "code_prefix": {
+            "type": "string",
+            "title": "Code Prefix",
+            "description": "The prefix to search for",
+            "examples": [
+              "client"
+            ]
+          },
+          "n_results": {
+            "type": "integer",
+            "title": "N Results",
+            "description": "The number of results to return",
+            "examples": [
+              2
+            ]
+          },
+          "collection_parameters": {
+            "$ref": "#/components/schemas/CollectionParameters",
+            "description": "The parameters of the collection"
+          },
+          "matches": {
+            "items": {
+              "$ref": "#/components/schemas/PrefixSearchWithReprResult"
+            },
+            "type": "array",
+            "title": "Matches",
+            "description": "The objects that were found in the search",
+            "default": [],
+            "examples": [
+              {
+                "id": "client_1839391",
+                "object": {
+                  "address": {
+                    "city": "Town",
+                    "line1": "123 Oak St",
+                    "line2": "Suite 100",
+                    "postal_code": "12345",
+                    "state": "State"
+                  },
+                  "company_name": "Carrier One"
+                },
+                "representation": "Carrier One 123 Oak St Suite 100 Town State 12345"
+              },
+              {
+                "id": "client_18923843",
+                "object": {
+                  "address": {
+                    "city": "City",
+                    "line1": "456 Elm St",
+                    "line2": "Suite 200",
+                    "postal_code": "54321",
+                    "state": "State"
+                  },
+                  "company_name": "Carrier Two"
+                },
+                "representation": "Carrier Two 456 Elm St Suite 200 City State 54321"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "code_prefix",
+          "n_results",
+          "collection_parameters"
+        ],
+        "title": "QueryPrefixWithReprResponse"
+      },
+      "QueryVectorRequest": {
+        "properties": {
+          "query_object": {
+            "type": "object",
+            "title": "Query Object",
+            "description": "The object to search for",
+            "examples": [
+              {
+                "address": {
+                  "line1": "123 Oak St",
+                  "line2": "Suite 200",
+                  "postal_code": "12345",
+                  "state": "State"
+                },
+                "company_name": "Carrier X"
+              }
+            ]
+          },
+          "n_results": {
+            "type": "integer",
+            "title": "N Results",
+            "description": "The number of results to return",
+            "examples": [
+              2
+            ]
+          },
+          "n_query": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "N Query",
+            "description": "The number of results to compare with each other within the query"
+          },
+          "collection_parameters": {
+            "$ref": "#/components/schemas/CollectionParameters",
+            "description": "The parameters of the collection"
+          }
+        },
+        "type": "object",
+        "required": [
+          "query_object",
+          "n_results",
+          "collection_parameters"
+        ],
+        "title": "QueryVectorRequest"
+      },
+      "QueryVectorResponse": {
+        "properties": {
+          "query_object": {
+            "type": "object",
+            "title": "Query Object",
+            "description": "The object to search for",
+            "examples": [
+              {
+                "address": {
+                  "line1": "123 Oak St",
+                  "line2": "Suite 200",
+                  "postal_code": "12345",
+                  "state": "State"
+                },
+                "company_name": "Carrier X"
+              }
+            ]
+          },
+          "n_results": {
+            "type": "integer",
+            "title": "N Results",
+            "description": "The number of results to return",
+            "examples": [
+              2
+            ]
+          },
+          "n_query": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "N Query",
+            "description": "The number of results to compare with each other within the query"
+          },
+          "collection_parameters": {
+            "$ref": "#/components/schemas/CollectionParameters",
+            "description": "The parameters of the collection"
+          },
+          "matches": {
+            "items": {
+              "$ref": "#/components/schemas/VectorSearchResult"
+            },
+            "type": "array",
+            "title": "Matches",
+            "description": "The objects that were found in the search",
+            "default": [],
+            "examples": [
+              {
+                "id": "client_1839391",
+                "object": {
+                  "address": {
+                    "city": "Town",
+                    "line1": "123 Oak St",
+                    "line2": "Suite 100",
+                    "postal_code": "12345",
+                    "state": "State"
+                  },
+                  "company_name": "Carrier One"
+                },
+                "score": 0.8356956189999998
+              },
+              {
+                "id": "client_18923843",
+                "object": {
+                  "address": {
+                    "city": "City",
+                    "line1": "456 Elm St",
+                    "line2": "Suite 200",
+                    "postal_code": "54321",
+                    "state": "State"
+                  },
+                  "company_name": "Carrier Two"
+                },
+                "score": 0.22921603099999996
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "query_object",
+          "n_results",
+          "collection_parameters"
+        ],
+        "title": "QueryVectorResponse"
+      },
+      "QueryVectorWithReprResponse": {
+        "properties": {
+          "query_object": {
+            "type": "object",
+            "title": "Query Object",
+            "description": "The object to search for",
+            "examples": [
+              {
+                "address": {
+                  "line1": "123 Oak St",
+                  "line2": "Suite 200",
+                  "postal_code": "12345",
+                  "state": "State"
+                },
+                "company_name": "Carrier X"
+              }
+            ]
+          },
+          "n_results": {
+            "type": "integer",
+            "title": "N Results",
+            "description": "The number of results to return",
+            "examples": [
+              2
+            ]
+          },
+          "n_query": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "N Query",
+            "description": "The number of results to compare with each other within the query"
+          },
+          "collection_parameters": {
+            "$ref": "#/components/schemas/CollectionParameters",
+            "description": "The parameters of the collection"
+          },
+          "matches": {
+            "items": {
+              "$ref": "#/components/schemas/VectorSearchWithReprResult"
+            },
+            "type": "array",
+            "title": "Matches",
+            "description": "The objects that were found in the search",
+            "default": [],
+            "examples": [
+              {
+                "id": "client_1839391",
+                "object": {
+                  "address": {
+                    "city": "Town",
+                    "line1": "123 Oak St",
+                    "line2": "Suite 100",
+                    "postal_code": "12345",
+                    "state": "State"
+                  },
+                  "company_name": "Carrier One"
+                },
+                "representation": "Carrier One 123 Oak St Suite 100 Town State 12345",
+                "score": 0.8358328859999997
+              },
+              {
+                "id": "client_18923843",
+                "object": {
+                  "address": {
+                    "city": "City",
+                    "line1": "456 Elm St",
+                    "line2": "Suite 200",
+                    "postal_code": "54321",
+                    "state": "State"
+                  },
+                  "company_name": "Carrier Two"
+                },
+                "representation": "Carrier Two 456 Elm St Suite 200 City State 54321",
+                "score": 0.22913794600000012
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "query_object",
+          "n_results",
+          "collection_parameters"
+        ],
+        "title": "QueryVectorWithReprResponse"
+      },
+      "RecipientData": {
+        "properties": {
+          "company_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Company Name",
+            "description": "Name of the company."
+          },
+          "observations": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Observations",
+            "description": "Observations about the recipient."
+          },
+          "address": {
+            "$ref": "#/components/schemas/cubeblock__dataclasses__primitives__AddressData",
+            "description": "Address of the recipient.",
+            "default": {}
+          },
+          "phone_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone Number",
+            "description": "Phone number of the recipient."
+          },
+          "email_address": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "email"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email Address",
+            "description": "Email address of the recipient."
+          },
+          "delivery_datetime": {
+            "$ref": "#/components/schemas/PickupDeliveryDatetimeData",
+            "description": "delivery date and time",
+            "default": {}
+          }
+        },
+        "type": "object",
+        "title": "RecipientData"
+      },
+      "RecipientInformations": {
+        "properties": {
+          "recipient_dropoff_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recipient Dropoff Name",
+            "description": "Name of the recipient dropoff point (often this is a company name + a location name, ex: CARREFOUR MELUN ex: BASE ITM MONTELIMAR"
+          },
+          "recipient_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recipient Id",
+            "description": "ID of the recipient. This is a internal unique identifier for the recipient, that is often present in the transport order."
+          },
+          "recipient_country": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recipient Country",
+            "description": "Country of the recipient"
+          },
+          "recipient_city": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recipient City",
+            "description": "City of the recipient"
+          },
+          "recipient_department_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recipient Department Number",
+            "description": "Department number of the recipient. A french department number is 2 digits long, and identifies a department. ex: 75 for Paris"
+          },
+          "recipient_postal_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recipient Postal Code",
+            "description": "Postal code of the recipient. A french postal code is 5 digits long, identifies a city, and starts with the 2 digits of the department number."
+          },
+          "delivery_datetime": {
+            "$ref": "#/components/schemas/PickupDeliveryDatetimeData",
+            "description": "Delivery date and time in ISO 8601 format",
+            "default": {}
+          }
+        },
+        "type": "object",
+        "title": "RecipientInformations"
+      },
+      "RoadBookingConfirmationAnalysisAPIResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Unique identifier of the analysis"
+          },
+          "is_demo": {
+            "type": "boolean",
+            "title": "Is Demo",
+            "default": false
+          },
+          "extraction_source": {
+            "type": "string",
+            "enum": [
+              "mailbox",
+              "plugin"
+            ],
+            "title": "Extraction Source",
+            "description": "Source of the document analysis"
+          },
+          "extraction_status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "pending",
+              "failed",
+              "sent_to_tms",
+              "need_review"
+            ],
+            "title": "Extraction Status",
+            "description": "Status of the extraction"
+          },
+          "user": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/cube_server__services__iam__models__User"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "User identity"
+          },
+          "request_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Request At",
+            "description": "Timestamp of the analysis"
+          },
+          "extraction_type": {
+            "type": "string",
+            "enum": [
+              "RoadBookingConfirmation",
+              "RoadTransportOrder",
+              "AirBookingConfirmation"
+            ],
+            "title": "Extraction Type",
+            "default": "RoadBookingConfirmation"
+          },
+          "extraction": {
+            "$ref": "#/components/schemas/RoadBookingConfirmationData"
+          },
+          "uncertainties": {
+            "title": "Uncertainties",
+            "description": "Uncertainties of the fields extracted from the document"
+          },
+          "mappings": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/MappingObject"
+            },
+            "type": "object",
+            "title": "Mappings",
+            "description": "Mapping between internal codes, ids and the real objects"
+          },
+          "action_type": {
+            "type": "string",
+            "enum": [
+              "Creation",
+              "Modification",
+              "Deletion"
+            ],
+            "title": "Action Type",
+            "description": "Type of the action taken by the assistant"
+          },
+          "documents": {
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/BaseMIMEData"
+                },
+                {
+                  "$ref": "#/components/schemas/MIMEData-Output"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Documents",
+            "description": "Documents uploaded for the analysis"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "extraction_source",
+          "extraction_status",
+          "request_at",
+          "extraction",
+          "uncertainties",
+          "mappings",
+          "action_type",
+          "documents"
+        ],
+        "title": "RoadBookingConfirmationAnalysisAPIResponse"
+      },
+      "RoadBookingConfirmationData": {
+        "properties": {
+          "booking_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Booking Id",
+            "description": "Booking ID"
+          },
+          "client": {
+            "$ref": "#/components/schemas/ClientData",
+            "description": "Client data"
+          },
+          "payment": {
+            "$ref": "#/components/schemas/TransportPriceData",
+            "description": "Payment data"
+          },
+          "shipments": {
+            "items": {
+              "$ref": "#/components/schemas/ShipmentData"
+            },
+            "type": "array",
+            "title": "Shipments",
+            "description": "List of shipment data"
+          }
+        },
+        "type": "object",
+        "required": [
+          "client",
+          "payment",
+          "shipments"
+        ],
+        "title": "RoadBookingConfirmationData"
+      },
+      "RoadRoadTransportOrderAnalysisAPIResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Unique identifier of the analysis"
+          },
+          "is_demo": {
+            "type": "boolean",
+            "title": "Is Demo",
+            "default": false
+          },
+          "extraction_source": {
+            "type": "string",
+            "enum": [
+              "mailbox",
+              "plugin"
+            ],
+            "title": "Extraction Source",
+            "description": "Source of the document analysis"
+          },
+          "extraction_status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "pending",
+              "failed",
+              "sent_to_tms",
+              "need_review"
+            ],
+            "title": "Extraction Status",
+            "description": "Status of the extraction"
+          },
+          "user": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/cube_server__services__iam__models__User"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "User identity"
+          },
+          "request_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Request At",
+            "description": "Timestamp of the analysis"
+          },
+          "extraction_type": {
+            "type": "string",
+            "enum": [
+              "RoadBookingConfirmation",
+              "RoadTransportOrder",
+              "AirBookingConfirmation"
+            ],
+            "title": "Extraction Type",
+            "default": "RoadTransportOrder"
+          },
+          "extraction": {
+            "$ref": "#/components/schemas/RoadTransportOrder"
+          },
+          "uncertainties": {
+            "title": "Uncertainties",
+            "description": "Uncertainties of the fields extracted from the document"
+          },
+          "mappings": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/MappingObject"
+            },
+            "type": "object",
+            "title": "Mappings",
+            "description": "Mapping between internal codes, ids and the real objects"
+          },
+          "action_type": {
+            "type": "string",
+            "enum": [
+              "Creation",
+              "Modification",
+              "Deletion"
+            ],
+            "title": "Action Type",
+            "description": "Type of the action taken by the assistant"
+          },
+          "documents": {
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/BaseMIMEData"
+                },
+                {
+                  "$ref": "#/components/schemas/MIMEData-Output"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Documents",
+            "description": "Documents uploaded for the analysis"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "extraction_source",
+          "extraction_status",
+          "request_at",
+          "extraction",
+          "uncertainties",
+          "mappings",
+          "action_type",
+          "documents"
+        ],
+        "title": "RoadRoadTransportOrderAnalysisAPIResponse"
+      },
+      "RoadTransportOrder": {
+        "properties": {
+          "transport_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Transport Id",
+            "description": "Transport ID"
+          },
+          "client": {
+            "$ref": "#/components/schemas/ClientData",
+            "description": "Client data"
+          },
+          "loads": {
+            "items": {
+              "$ref": "#/components/schemas/LoadData"
+            },
+            "type": "array",
+            "title": "Loads",
+            "description": "List of loads data",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "client"
+        ],
+        "title": "RoadTransportOrder"
+      },
+      "SenderData": {
+        "properties": {
+          "company_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Company Name",
+            "description": "Name of the company."
+          },
+          "observations": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Observations",
+            "description": "Observations about the sender."
+          },
+          "address": {
+            "$ref": "#/components/schemas/cubeblock__dataclasses__primitives__AddressData",
+            "description": "Address of the sender.",
+            "default": {}
+          },
+          "phone_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone Number",
+            "description": "Phone number of the sender."
+          },
+          "email_address": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "email"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email Address",
+            "description": "Email address of the sender."
+          },
+          "pickup_datetime": {
+            "$ref": "#/components/schemas/PickupDeliveryDatetimeData",
+            "description": "pickup date and time in ISO 8601 format",
+            "default": {}
+          }
+        },
+        "type": "object",
+        "title": "SenderData"
+      },
+      "ShipmentData": {
+        "properties": {
+          "shipment_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shipment Id",
+            "description": "Shipment ID"
+          },
+          "sender": {
+            "$ref": "#/components/schemas/SenderData",
+            "description": "Sender data",
+            "default": {
+              "address": {},
+              "pickup_datetime": {}
+            }
+          },
+          "recipient": {
+            "$ref": "#/components/schemas/RecipientData",
+            "description": "Recipient data",
+            "default": {
+              "address": {},
+              "delivery_datetime": {}
+            }
+          },
+          "goods": {
+            "$ref": "#/components/schemas/GoodsData",
+            "description": "Description of transported goods",
+            "default": {
+              "packing": {},
+              "dimensions": {},
+              "temperature_infos": {},
+              "dangerous_goods_infos": []
+            }
+          },
+          "transport_constraints": {
+            "$ref": "#/components/schemas/TruckData",
+            "description": "List of transport constraints informations",
+            "default": {}
+          }
+        },
+        "type": "object",
+        "title": "ShipmentData"
+      },
+      "StatsResponse": {
+        "properties": {
+          "result": {
+            "type": "object",
+            "title": "Result",
+            "description": "The result of the stats operation",
+            "examples": [
+              {
+                "dimension": 1536,
+                "indexFullness": 0,
+                "namespaces": {
+                  "VAT_number": {
+                    "vectorCount": 2
+                  },
+                  "address.city": {
+                    "vectorCount": 2
+                  },
+                  "address.country": {
+                    "vectorCount": 2
+                  },
+                  "address.line1": {
+                    "vectorCount": 2
+                  },
+                  "address.line2": {
+                    "vectorCount": 2
+                  },
+                  "address.postal_code": {
+                    "vectorCount": 2
+                  },
+                  "address.state": {
+                    "vectorCount": 2
+                  },
+                  "company_name": {
+                    "vectorCount": 2
+                  },
+                  "email_address": {
+                    "vectorCount": 2
+                  },
+                  "phone_number": {
+                    "vectorCount": 2
+                  }
+                },
+                "totalVectorCount": 20
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "result"
+        ],
+        "title": "StatsResponse"
+      },
+      "TemperatureInfosData": {
+        "properties": {
+          "min_temperature": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Temperature",
+            "description": "Minimum temperature (in Celsius)"
+          },
+          "max_temperature": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Temperature",
+            "description": "Maximum temperature (in Celsius)"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "Dry",
+                  "Fresh",
+                  "Frozen"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category",
+            "description": "Temperature control requirements"
+          }
+        },
+        "type": "object",
+        "title": "TemperatureInfosData"
+      },
+      "TextBox": {
+        "properties": {
+          "width": {
+            "type": "integer",
+            "title": "Width"
+          },
+          "height": {
+            "type": "integer",
+            "title": "Height"
+          },
+          "center": {
+            "$ref": "#/components/schemas/Point"
+          },
+          "vertices": {
+            "prefixItems": [
+              {
+                "$ref": "#/components/schemas/Point"
+              },
+              {
+                "$ref": "#/components/schemas/Point"
+              },
+              {
+                "$ref": "#/components/schemas/Point"
+              },
+              {
+                "$ref": "#/components/schemas/Point"
+              }
+            ],
+            "type": "array",
+            "maxItems": 4,
+            "minItems": 4,
+            "title": "Vertices",
+            "description": "(top-left, top-right, bottom-right, bottom-left)"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "width",
+          "height",
+          "center",
+          "vertices",
+          "text"
+        ],
+        "title": "TextBox"
+      },
+      "TransportPriceData": {
+        "properties": {
+          "total_price": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Price",
+            "description": "Price of the booking order"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency",
+            "description": "Three-letter currency code (ISO 4217)."
+          }
+        },
+        "type": "object",
+        "title": "TransportPriceData"
+      },
+      "TruckData": {
+        "properties": {
+          "vehicle_type": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "Tractor",
+                  "Carrier",
+                  "Light Vehicle"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vehicle Type",
+            "description": "Type of vehicle"
+          },
+          "body_type": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "Tautliner",
+                  "Dry Van",
+                  "Refrigerated",
+                  "Flatbed",
+                  "Tanker"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Body Type",
+            "description": "Type of body"
+          },
+          "tail_lift": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tail Lift",
+            "description": "Tail lift"
+          },
+          "crane": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Crane",
+            "description": "Crane"
+          }
+        },
+        "type": "object",
+        "title": "TruckData"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "VectorSearchResult": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "The internal code of the object",
+            "examples": [
+              "ACMECORP123ELMSTRT"
+            ]
+          },
+          "score": {
+            "type": "number",
+            "title": "Score",
+            "description": "Value of the similarity metric between the two objects"
+          },
+          "object": {
+            "title": "Object",
+            "description": "The object that was found in the search"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "score",
+          "object"
+        ],
+        "title": "VectorSearchResult"
+      },
+      "VectorSearchWithReprResult": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "The internal code of the object",
+            "examples": [
+              "ACMECORP123ELMSTRT"
+            ]
+          },
+          "score": {
+            "type": "number",
+            "title": "Score",
+            "description": "Value of the similarity metric between the two objects"
+          },
+          "object": {
+            "title": "Object",
+            "description": "The object that was found in the search"
+          },
+          "representation": {
+            "type": "string",
+            "title": "Representation",
+            "description": "A nice string representation of the object that will be transmitted to the frontend",
+            "examples": [
+              "ACME Corp - 123 Elm Street - Suite 500 - London, Greater London, WC2N 5DU, GB"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "score",
+          "object",
+          "representation"
+        ],
+        "title": "VectorSearchWithReprResult"
+      },
+      "WeightData": {
+        "properties": {
+          "unit": {
+            "$ref": "#/components/schemas/WeightUnit",
+            "description": "Unit of weight"
+          },
+          "value": {
+            "type": "number",
+            "title": "Value",
+            "description": "Weight of the load (in kilograms)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "unit",
+          "value"
+        ],
+        "title": "WeightData"
+      },
+      "WeightUnit": {
+        "type": "string",
+        "enum": [
+          "kg",
+          "lb"
+        ],
+        "title": "WeightUnit"
+      },
+      "cube_server__services__iam__models__User": {
+        "properties": {
+          "object": {
+            "type": "string",
+            "enum": [
+              "user"
+            ],
+            "const": "user",
+            "title": "Object"
+          },
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "first_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Name"
+          },
+          "last_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Name"
+          },
+          "email_verified": {
+            "type": "boolean",
+            "title": "Email Verified"
+          },
+          "profile_picture_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Profile Picture Url"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "title": "Updated At"
+          },
+          "parameters": {
+            "$ref": "#/components/schemas/cube_server__services__iam__models__UserParameters"
+          }
+        },
+        "type": "object",
+        "required": [
+          "object",
+          "id",
+          "email",
+          "email_verified",
+          "created_at",
+          "updated_at",
+          "parameters"
+        ],
+        "title": "User"
+      },
+      "cube_server__services__iam__models__UserParameters": {
+        "properties": {
+          "language": {
+            "type": "string",
+            "enum": [
+              "fr",
+              "en",
+              "de",
+              "es",
+              "it",
+              "nl",
+              "pt",
+              "pl"
+            ],
+            "title": "Language"
+          },
+          "agency_id": {
+            "type": "string",
+            "title": "Agency Id"
+          },
+          "organization_id": {
+            "type": "string",
+            "title": "Organization Id"
+          },
+          "phone_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone Number",
+            "description": "Phone number of the user"
+          }
+        },
+        "type": "object",
+        "required": [
+          "language",
+          "agency_id",
+          "organization_id"
+        ],
+        "title": "UserParameters"
+      },
+      "cubeblock__dataclasses__primitives__AddressData": {
+        "properties": {
+          "line1": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Line1",
+            "description": "Address line 1 (e.g., street, PO Box, or company name)."
+          },
+          "line2": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Line2",
+            "description": "Address line 2 (e.g., apartment, suite, unit, or building)."
+          },
+          "city": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "City",
+            "description": "City, district, suburb, town, or village."
+          },
+          "state": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "State",
+            "description": "State, county, province, or region."
+          },
+          "postal_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Postal Code",
+            "description": "ZIP or postal code."
+          },
+          "country": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Country",
+            "description": "Two-letter country code (ISO 3166-1 alpha-2)."
+          }
+        },
+        "type": "object",
+        "title": "AddressData"
       }
     },
     "securitySchemes": {
-      "bearerAuth": {
+      "HTTPBasic": {
         "type": "http",
-        "scheme": "bearer"
+        "scheme": "basic"
       }
     }
   }
